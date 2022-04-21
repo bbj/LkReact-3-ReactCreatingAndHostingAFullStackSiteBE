@@ -1,8 +1,11 @@
 import express from "express";
 import bodyParser from "body-parser";
 import { MongoClient } from "mongodb";
+import path from "path"; //no need npm install as included in node.js
 
 const app = express();
+
+app.use(express.static(path.join(__dirname, '/build')));
 
 //POST requests will be parsed, req.body added and JSON extracted
 app.use(bodyParser.json());
@@ -58,8 +61,10 @@ app.post('/api/articles/:name/add-comment', (req, res) => {
   }, res);
 })
 
-// app.get('/hello', (req, res) => res.send('GET Hello'));
-// app.get('/hello/:name', (req, res) => res.send(`GET Hello ${req.params.name}`));
-// app.post('/hello', (req, res) => res.send(`POST Hello ${req.body.name}`));
+//all requests that aren't caught by any of our other API routes
+//should be passed on to our app to navigate pages and process urls correctly,
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname + '/build/index.html'));
+});
 
 app.listen(8000, () => console.log('listening on port 8000'));
